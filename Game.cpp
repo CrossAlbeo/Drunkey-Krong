@@ -2,9 +2,11 @@
 #include "StringHelpers.h"
 #include "Game.h"
 #include "EntityManager.h"
+#include "Collision.h"
 
 const float Game::PlayerSpeed = 100.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
+Collision collision = Collision();
 
 Game::Game()
 	: mWindow(sf::VideoMode(840, 600), "Donkey Kong 1981", sf::Style::Close)
@@ -132,14 +134,21 @@ void Game::processEvents()
 void Game::update(sf::Time elapsedTime)
 {
 	sf::Vector2f movement(0.f, 0.f);
-	if (mIsMovingUp)
+	//TODO Replace With Jump And Gravity
+	/*if (mIsMovingUp)
 		movement.y -= PlayerSpeed;
 	if (mIsMovingDown)
-		movement.y += PlayerSpeed;
+		movement.y += PlayerSpeed;*/
 	if (mIsMovingLeft)
 		movement.x -= PlayerSpeed;
 	if (mIsMovingRight)
 		movement.x += PlayerSpeed;
+	//TODO Definir un block en général
+	/*if (!collision.areCollided(mPlayer, _Block[0][0]))
+		movement.y += PlayerSpeed;*/
+	//MoonWalk
+	//if(collision.areCollided(mPlayer, mPlayer))
+		//movement.x -= PlayerSpeed;
 
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
