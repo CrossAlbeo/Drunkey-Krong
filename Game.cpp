@@ -5,19 +5,19 @@
 
 const float Game::PlayerSpeed = 100.f;
 const sf::Time Game::TimePerFrame = sf::seconds(1.f / 60.f);
+const int lPxSheet = 24;
 
 Game::Game()
-	: mWindow(sf::VideoMode(840, 600), "Donkey Kong 1981", sf::Style::Close)
+	: mWindow(sf::VideoMode(840, 600), "Drunkey Krong", sf::Style::Close)
 	, mTexture()
 	, mPlayer()
 	, mFont()
 	, mStatisticsText()
 	, mStatisticsUpdateTime()
 	, mStatisticsNumFrames(0)
-	, mIsMovingUp(false)
-	, mIsMovingDown(false)
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
+	, mIsJumping(false)
 {
 	mWindow.setFramerateLimit(160);
 
@@ -59,16 +59,50 @@ Game::Game()
 		EntityManager::m_Entities.push_back(se);
 	}
 
-	// Draw Mario
+	// Draw Luigi
 
-	mTexture.loadFromFile("Media/Textures/Mario_small_transparent.png"); // Mario_small.png");
-	_sizeMario = mTexture.getSize();
+	mTexture.loadFromFile("Media/Textures/luigi_spritesheet.png");
+	sf::IntRect rectSourceSprite;
+
+	if (mIsJumping)
+	{
+
+	}
+
+	else if (mIsCrouching)
+	{
+		if (mWasLeft)
+		{
+			rectSourceSprite.left = 1 * lPxSheet;
+			rectSourceSprite.top = 1 * lPxSheet;
+		}
+		else if (mWasRight)
+		{
+			rectSourceSprite.left = 2 * lPxSheet;
+			rectSourceSprite.top = 1 * lPxSheet;
+		}
+			
+	}
+	else if (mIsMovingLeft)
+	{
+		rectSourceSprite.left = 0 * lPxSheet;
+		rectSourceSprite.top = 0 * lPxSheet;
+	}
+	else if (mIsMovingRight)
+	{
+		rectSourceSprite.left = 4 * lPxSheet;
+		rectSourceSprite.top = 0 * lPxSheet;
+	}
+
+	_sizeLugi = mTexture.getSize();
 	mPlayer.setTexture(mTexture);
-	sf::Vector2f posMario;
-	posMario.x = 100.f + 70.f;
-	posMario.y = BLOCK_SPACE * 5 - _sizeMario.y;
+	mPlayer.setTextureRect(rectSourceSprite);
+	mPlayer.setScale(2, 2);
+	sf::Vector2f posLuigi;
+	posLuigi.x = 100.f + 70.f;
+	posLuigi.y = BLOCK_SPACE * 5 - _sizeLugi.y;
 
-	mPlayer.setPosition(posMario);
+	mPlayer.setPosition(posLuigi);
 
 	std::shared_ptr<Entity> player = std::make_shared<Entity>();
 	player->m_sprite = mPlayer;
@@ -131,15 +165,35 @@ void Game::processEvents()
 
 void Game::update(sf::Time elapsedTime)
 {
+
 	sf::Vector2f movement(0.f, 0.f);
-	if (mIsMovingUp)
-		movement.y -= PlayerSpeed;
-	if (mIsMovingDown)
+	if(mIsJumping)
+	{
+		
+		
+		movement.y -= mJumpState;
+		mJumpState -= 25.f;
+		if (mJumpState <= -400.f)
+			mJumpState = -400.f;
+		// if (collision) {
+		//    mJumpState = 0.f;
+		//    misJumping = false;
+		// }
+	}
+		
+	if (mIsCrouching)
+	{
 		movement.y += PlayerSpeed;
+	}
+		
 	if (mIsMovingLeft)
+	{
 		movement.x -= PlayerSpeed;
+	}
 	if (mIsMovingRight)
+	{
 		movement.x += PlayerSpeed;
+	}
 
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
@@ -183,8 +237,8 @@ void Game::updateStatistics(sf::Time elapsedTime)
 	if (mStatisticsUpdateTime >= sf::seconds(1.0f))
 	{
 		mStatisticsText.setString(
-			"Frames / Second = " + toString(mStatisticsNumFrames) + "\n" +
-			"Time / Update = " + toString(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames) + "us");
+			"Drunkey Krong is Krongy enough\nFrames / Second = " + toString(mStatisticsNumFrames) + "\n" +
+			"Time / Update = " + toString(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames) + "µs");
 
 		mStatisticsUpdateTime -= sf::seconds(1.0f);
 		mStatisticsNumFrames = 0;
@@ -203,9 +257,13 @@ void Game::updateStatistics(sf::Time elapsedTime)
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
 	if (key == sf::Keyboard::Up)
-		mIsMovingUp = isPressed;
+	{
+		mIsJumping = true;
+		mJumpState = 400.f;
+	}
+		
 	else if (key == sf::Keyboard::Down)
-		mIsMovingDown = isPressed;
+		mIsCrouching = isPressed;
 	else if (key == sf::Keyboard::Left)
 		mIsMovingLeft = isPressed;
 	else if (key == sf::Keyboard::Right)
@@ -213,5 +271,6 @@ void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 
 	if (key == sf::Keyboard::Space)
 	{
+		mIsJumping = isPressed;
 	}
 }

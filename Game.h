@@ -32,10 +32,13 @@ private:
 	sf::Time	mStatisticsUpdateTime;
 
 	std::size_t	mStatisticsNumFrames;
-	bool mIsMovingUp;
-	bool mIsMovingDown;
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
+	bool mIsJumping;
+	bool mIsCrouching;
+	float mJumpState;
+	bool mWasLeft;
+	bool mWasRight;
 
 	sf::Texture	_TextureEchelle;
 	sf::Sprite	_Echelle[ECHELLE_COUNT];
@@ -44,6 +47,6 @@ private:
 	sf::Texture	_TextureWeapon;
 	sf::Sprite	_Weapon;
 	sf::Vector2u _sizeBlock;
-	sf::Vector2u _sizeMario;
+	sf::Vector2u _sizeLugi;
 };
 
