@@ -32,10 +32,13 @@ sf::Vector2f collideBlock(std::shared_ptr<Entity> player, std::shared_ptr<Entity
 {
 	return player->m_position;
 }
-sf::Vector2f collideEchelle(std::shared_ptr<Entity> player, std::shared_ptr<Entity> echelle)
+
+//NONEED
+bool collideEchelle(std::shared_ptr<Entity> player, std::shared_ptr<Entity> echelle)
 {
-	return player->m_position;
+	return true;
 }
+//TODO GAMEOVER
 sf::Vector2f collideBillBall(std::shared_ptr<Entity> player, std::shared_ptr<Entity> billBall)
 {
 	return player->m_position;
