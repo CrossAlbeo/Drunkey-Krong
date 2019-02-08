@@ -40,7 +40,9 @@ private:
 	bool mWasLeft;
 	bool mWasRight;
 	bool mLastState;
-	sf::IntRect rectSourceSprite;
+	bool mCanClimb;
+	bool mIsClimbingUp;
+	bool mIsClimbingDown;
 
 	sf::Texture	_TextureEchelle;
 	sf::Sprite	_Echelle[ECHELLE_COUNT];
