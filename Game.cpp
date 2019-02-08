@@ -20,6 +20,8 @@ Game::Game()
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
 	, mIsJumping(false)
+	, mLastState(true)
+	, mCanClimb(false)
 {
 	mWindow.setFramerateLimit(160);
 
@@ -64,37 +66,13 @@ Game::Game()
 	// Draw Luigi
 
 	mTexture.loadFromFile("Media/Textures/luigi_spritesheet.png");
+	//mTexture.loadFromFile("Media/Textures/Mario_small_transparent.png");
 	sf::IntRect rectSourceSprite;
 
-	if (mIsJumping)
-	{
-
-	}
-
-	else if (mIsCrouching)
-	{
-		if (mWasLeft)
-		{
-			rectSourceSprite.left = 1 * lPxSheet;
-			rectSourceSprite.top = 1 * lPxSheet;
-		}
-		else if (mWasRight)
-		{
-			rectSourceSprite.left = 2 * lPxSheet;
-			rectSourceSprite.top = 1 * lPxSheet;
-		}
-			
-	}
-	else if (mIsMovingLeft)
-	{
-		rectSourceSprite.left = 0 * lPxSheet;
-		rectSourceSprite.top = 0 * lPxSheet;
-	}
-	else if (mIsMovingRight)
-	{
-		rectSourceSprite.left = 4 * lPxSheet;
-		rectSourceSprite.top = 0 * lPxSheet;
-	}
+	rectSourceSprite.height = lPxSheet;
+	rectSourceSprite.width = lPxSheet;
+	rectSourceSprite.left = 4 * lPxSheet;
+	rectSourceSprite.top = 0 * lPxSheet;
 
 	_sizeLugi = mTexture.getSize();
 	mPlayer.setTexture(mTexture);
@@ -170,13 +148,32 @@ void Game::update(sf::Time elapsedTime)
 
 	sf::Vector2f movement(0.f, 0.f);
 	//TODO Replace With Jump And Gravity
-	/*if (mIsMovingUp)
-		movement.y -= PlayerSpeed;
-	if (mIsMovingDown)
-		movement.y += PlayerSpeed;*/
+
+	if (mIsJumping)
+	{
+		movement.y -= mJumpState;
+		mJumpState -= 25.;
+		if (mJumpState < -400.)
+			mJumpState = -400.;
+	}
+		
+	
+	if (mIsCrouching)
+	{
+		mIsJumping = false;
+		movement.y = 0;
+	}
 	if (mIsMovingLeft)
 	{
 		movement.x -= PlayerSpeed;
+	}
+	if (mIsClimbingUp)
+	{
+		movement.y -= PlayerSpeed;
+	}
+	if (mIsClimbingDown)
+	{
+		movement.y += PlayerSpeed;
 	}
 	if (mIsMovingRight)
 	{
@@ -235,10 +232,25 @@ void Game::updateStatistics(sf::Time elapsedTime)
 
 	if (mStatisticsUpdateTime >= sf::seconds(1.0f))
 	{
-		mStatisticsText.setString(
-			"Drunkey Krong is Krongy enough\nFrames / Second = " + toString(mStatisticsNumFrames) + "\n" +
-			"Time / Update = " + toString(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames) + "�s");
+		for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
+		{
+			if (entity->m_enabled == false)
+			{
+				continue;
+			}
 
+			if (entity->m_type != EntityType::player)
+			{
+				continue;
+			}
+
+			mStatisticsText.setString(
+				"Drunkey Krong is Krongy enough\nFrames / Second = " + toString(mStatisticsNumFrames) + "\n" +
+				"Time / Update = " + toString(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames) + "us\n" +
+				"Position x = " + toString(entity->m_sprite.getPosition().x) + "\t y = " + toString(entity->m_sprite.getPosition().y) + "\n" +
+				"jumpstate" + toString(mJumpState)
+			);
+		}
 		mStatisticsUpdateTime -= sf::seconds(1.0f);
 		mStatisticsNumFrames = 0;
 	}
@@ -255,14 +267,19 @@ void Game::updateStatistics(sf::Time elapsedTime)
 
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
-	if (key == sf::Keyboard::Up)
+	if (key == sf::Keyboard::Up && mIsJumping == false)
 	{
 		mIsJumping = true;
 		mJumpState = 400.f;
 	}
+
+	else if (key == sf::Keyboard::Up && mCanClimb)
+		mIsClimbingUp = true;
 		
 	else if (key == sf::Keyboard::Down)
 		mIsCrouching = isPressed;
+	else if (key == sf::Keyboard::Down && mCanClimb)
+		mIsClimbingDown = true;
 	else if (key == sf::Keyboard::Left)
 		mIsMovingLeft = isPressed;
 	else if (key == sf::Keyboard::Right)

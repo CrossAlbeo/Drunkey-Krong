@@ -39,6 +39,10 @@ private:
 	float mJumpState;
 	bool mWasLeft;
 	bool mWasRight;
+	bool mLastState;
+	bool mCanClimb;
+	bool mIsClimbingUp;
+	bool mIsClimbingDown;
 
 	sf::Texture	_TextureEchelle;
 	sf::Sprite	_Echelle[ECHELLE_COUNT];
