@@ -20,6 +20,7 @@ Game::Game()
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
 	, mIsJumping(false)
+	, mLastState(true)
 {
 	mWindow.setFramerateLimit(160);
 
@@ -64,37 +65,9 @@ Game::Game()
 	// Draw Luigi
 
 	mTexture.loadFromFile("Media/Textures/luigi_spritesheet.png");
-	sf::IntRect rectSourceSprite;
-
-	if (mIsJumping)
-	{
-
-	}
-
-	else if (mIsCrouching)
-	{
-		if (mWasLeft)
-		{
-			rectSourceSprite.left = 1 * lPxSheet;
-			rectSourceSprite.top = 1 * lPxSheet;
-		}
-		else if (mWasRight)
-		{
-			rectSourceSprite.left = 2 * lPxSheet;
-			rectSourceSprite.top = 1 * lPxSheet;
-		}
-			
-	}
-	else if (mIsMovingLeft)
-	{
-		rectSourceSprite.left = 0 * lPxSheet;
-		rectSourceSprite.top = 0 * lPxSheet;
-	}
-	else if (mIsMovingRight)
-	{
-		rectSourceSprite.left = 4 * lPxSheet;
-		rectSourceSprite.top = 0 * lPxSheet;
-	}
+	//mTexture.loadFromFile("Media/Textures/Mario_small_transparent.png");
+	rectSourceSprite.height = lPxSheet;
+	rectSourceSprite.width = lPxSheet;
 
 	_sizeLugi = mTexture.getSize();
 	mPlayer.setTexture(mTexture);
@@ -170,16 +143,24 @@ void Game::update(sf::Time elapsedTime)
 
 	sf::Vector2f movement(0.f, 0.f);
 	//TODO Replace With Jump And Gravity
-	/*if (mIsMovingUp)
+
+	if (mIsJumping)
 		movement.y -= PlayerSpeed;
-	if (mIsMovingDown)
+	/*if (mIsCrouching)
 		movement.y += PlayerSpeed;*/
+
 	if (mIsMovingLeft)
 	{
+		printf("going left");
+		rectSourceSprite.left = 0 * lPxSheet;
+		rectSourceSprite.top = 0 * lPxSheet;
 		movement.x -= PlayerSpeed;
 	}
 	if (mIsMovingRight)
 	{
+		printf("going right");
+		rectSourceSprite.left = 4 * lPxSheet;
+		rectSourceSprite.top = 0 * lPxSheet;
 		movement.x += PlayerSpeed;
 		//TODO Definir un block en g�n�ral
 		/*if (!collision.areCollided(mPlayer, _Block[0][0]))
@@ -232,7 +213,7 @@ void Game::updateStatistics(sf::Time elapsedTime)
 	{
 		mStatisticsText.setString(
 			"Drunkey Krong is Krongy enough\nFrames / Second = " + toString(mStatisticsNumFrames) + "\n" +
-			"Time / Update = " + toString(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames) + "�s");
+			"Time / Update = " + toString(mStatisticsUpdateTime.asMicroseconds() / mStatisticsNumFrames) + "us");
 
 		mStatisticsUpdateTime -= sf::seconds(1.0f);
 		mStatisticsNumFrames = 0;

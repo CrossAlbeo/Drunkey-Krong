@@ -39,6 +39,8 @@ private:
 	float mJumpState;
 	bool mWasLeft;
 	bool mWasRight;
+	bool mLastState;
+	sf::IntRect rectSourceSprite;
 
 	sf::Texture	_TextureEchelle;
 	sf::Sprite	_Echelle[ECHELLE_COUNT];
