@@ -9,9 +9,34 @@ Collision::Collision() {
 	secondBox = sf::FloatRect();
 }
 
-bool Collision::areCollided(sf::Sprite &sprite1, sf::Sprite &sprite2)
+bool Collision::areCollided(std::shared_ptr<Entity> entity1, EntityType otherEntityType)
 {
-	firstBox = sf::FloatRect(sprite1.getPosition(), sprite1.getScale());
-	secondBox = sf::FloatRect(sprite2.getPosition(), sprite2.getScale());
-	return firstBox.intersects(secondBox);
+	sf::Sprite sprite1 = entity1->m_sprite;
+	firstBox = sprite1.getGlobalBounds();
+	for (std::shared_ptr<Entity> otherEntity : EntityManager::m_Entities)
+	{
+		if (otherEntity->m_type == otherEntityType)
+		{
+			secondBox = otherEntity->m_sprite.getGlobalBounds();
+			if (firstBox.intersects(secondBox))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+//TODO
+sf::Vector2f collideBlock(std::shared_ptr<Entity> player, std::shared_ptr<Entity> block)
+{
+	return player->m_position;
+}
+sf::Vector2f collideEchelle(std::shared_ptr<Entity> player, std::shared_ptr<Entity> echelle)
+{
+	return player->m_position;
+}
+sf::Vector2f collideBillBall(std::shared_ptr<Entity> player, std::shared_ptr<Entity> billBall)
+{
+	return player->m_position;
 }
