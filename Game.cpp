@@ -181,12 +181,13 @@ void Game::update(sf::Time elapsedTime)
 	if (mIsMovingRight)
 	{
 		movement.x += PlayerSpeed;
-	//TODO Definir un block en g�n�ral
-	/*if (!collision.areCollided(mPlayer, _Block[0][0]))
-		movement.y += PlayerSpeed;*/
-	//MoonWalk
-	//if(collision.areCollided(mPlayer, mPlayer))
-		//movement.x -= PlayerSpeed;
+		//TODO Definir un block en g�n�ral
+		/*if (!collision.areCollided(mPlayer, _Block[0][0]))
+			movement.y += PlayerSpeed;*/
+			//MoonWalk
+			//if(collision.areCollided(mPlayer, mPlayer))
+				//movement.x -= PlayerSpeed;
+	}
 
 	for (std::shared_ptr<Entity> entity : EntityManager::m_Entities)
 	{
