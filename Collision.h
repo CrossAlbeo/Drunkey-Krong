@@ -19,10 +19,8 @@ private:
 	sf::FloatRect secondBox;
 
 public:
-	bool areCollided(std::shared_ptr<Entity> entity1, EntityType entity2);
-	sf::Vector2f collideBlock(std::shared_ptr<Entity> player, std::shared_ptr<Entity> block);
-	sf::Vector2f collideEchelle(std::shared_ptr<Entity> player, std::shared_ptr<Entity> echelle);
-	sf::Vector2f collideBillBall(std::shared_ptr<Entity> player, std::shared_ptr<Entity> billBall);
+	std::shared_ptr<Entity> areCollided(std::shared_ptr<Entity> entity1, EntityType entity2);
+	bool collideBlock(std::shared_ptr<Entity> player, std::shared_ptr<Entity> block);
 };
 
 #endif 

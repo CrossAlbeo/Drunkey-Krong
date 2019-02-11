@@ -4,7 +4,9 @@ enum EntityType
 {
 	player,
 	block,
-	echelle
+	echelle,
+	billBall,
+	waluigi
 };
 
 class Entity

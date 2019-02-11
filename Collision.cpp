@@ -9,7 +9,7 @@ Collision::Collision() {
 	secondBox = sf::FloatRect();
 }
 
-bool Collision::areCollided(std::shared_ptr<Entity> entity1, EntityType otherEntityType)
+std::shared_ptr<Entity> Collision::areCollided(std::shared_ptr<Entity> entity1, EntityType otherEntityType)
 {
 	sf::Sprite sprite1 = entity1->m_sprite;
 	firstBox = sprite1.getGlobalBounds();
@@ -20,26 +20,21 @@ bool Collision::areCollided(std::shared_ptr<Entity> entity1, EntityType otherEnt
 			secondBox = otherEntity->m_sprite.getGlobalBounds();
 			if (firstBox.intersects(secondBox))
 			{
-				return true;
+				return otherEntity;
 			}
 		}
 	}
-	return false;
+	
+	return NULL;
 }
 
-//TODO
-sf::Vector2f collideBlock(std::shared_ptr<Entity> player, std::shared_ptr<Entity> block)
+//Change Jumping State if player is above the block during the collision
+bool Collision::collideBlock(std::shared_ptr<Entity> player, std::shared_ptr<Entity> block)
 {
-	return player->m_position;
-}
-
-//NONEED
-bool collideEchelle(std::shared_ptr<Entity> player, std::shared_ptr<Entity> echelle)
-{
-	return true;
-}
-//TODO GAMEOVER
-sf::Vector2f collideBillBall(std::shared_ptr<Entity> player, std::shared_ptr<Entity> billBall)
-{
-	return player->m_position;
+	if (player->m_position.y <= block->m_position.y - block->m_size.y)
+	{
+		//player->m_position.y = block->m_position.y - block->m_size.y - 50.0;
+		return false;
+	}
+	else return true;
 }

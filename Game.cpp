@@ -195,12 +195,31 @@ void Game::update(sf::Time elapsedTime)
 		}
 		else 
 		{
-			//Collision here
-			if (collision.areCollided(entity, block))
-				movement.y += PlayerSpeed;
-			//MoonWalk
-			//if(collision.areCollided(mPlayer, mPlayer))
-				//movement.x -= PlayerSpeed;
+			//Collisions here
+			std::shared_ptr<Entity> collidedBlock = collision.areCollided(entity, block);
+			if (collidedBlock!=NULL && mIsJumping)
+			{
+				mIsJumping = collision.collideBlock(entity, collidedBlock);
+				if (!mIsJumping)
+				{
+					//entity->m_position.y = collidedBlock->m_position.y - collidedBlock->m_size.y - 10.0;
+					movement.y = -50.0;
+				}
+			}
+			if (collision.areCollided(entity, echelle) != NULL)
+			{
+				//TODO State Climbing
+				mCanClimb = true;
+			}
+			else mCanClimb = false;
+			if (collision.areCollided(entity, billBall) != NULL)
+			{
+				//TODO GameOver
+			}
+			if (collision.areCollided(entity, waluigi) != NULL)
+			{
+				//TODO Win
+			}
 		}
 
 		entity->m_sprite.move(movement * elapsedTime.asSeconds());
