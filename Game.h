@@ -35,6 +35,7 @@ private:
 	bool mIsMovingRight;
 	bool mIsMovingLeft;
 	bool mIsJumping;
+	bool mIsFalling;
 	bool mIsCrouching;
 	float mJumpState;
 	bool mWasLeft;

@@ -20,6 +20,7 @@ Game::Game()
 	, mIsMovingRight(false)
 	, mIsMovingLeft(false)
 	, mIsJumping(false)
+	, mIsFalling(false)
 	, mLastState(true)
 	, mCanClimb(false)
 {
@@ -153,8 +154,21 @@ void Game::update(sf::Time elapsedTime)
 	{
 		movement.y -= mJumpState;
 		mJumpState -= 25.;
+		if (mJumpState < 0)
+		{
+			mIsJumping = false;
+			mIsFalling = true;
+		}
+	}
+
+	if (mIsFalling)
+	{
+		movement.y -= mJumpState;
+		mJumpState -= 25.;
 		if (mJumpState < -400.)
+		{
 			mJumpState = -400.;
+		}
 	}
 		
 	
@@ -169,11 +183,13 @@ void Game::update(sf::Time elapsedTime)
 	}
 	if (mIsClimbingUp)
 	{
-		movement.y -= PlayerSpeed;
+		movement.y -= PlayerSpeed*2;
+		mIsClimbingUp = false;
 	}
 	if (mIsClimbingDown)
 	{
-		movement.y += PlayerSpeed;
+		movement.y += PlayerSpeed*2;
+		mIsClimbingDown = false;
 	}
 	if (mIsMovingRight)
 	{
@@ -197,21 +213,29 @@ void Game::update(sf::Time elapsedTime)
 		{
 			//Collisions here
 			std::shared_ptr<Entity> collidedBlock = collision.areCollided(entity, block);
-			if (collidedBlock!=NULL && mIsJumping)
+			if (collidedBlock!=NULL && mIsFalling)
 			{
-				mIsJumping = collision.collideBlock(entity, collidedBlock);
-				if (!mIsJumping)
+				mIsFalling = collision.collideBlock(entity, collidedBlock);
+				if (!mIsFalling)
 				{
-					//entity->m_position.y = collidedBlock->m_position.y - collidedBlock->m_size.y - 10.0;
-					movement.y = -50.0;
+					movement.y =- PlayerSpeed*2.0;
 				}
+			}
+			else if (collidedBlock == NULL && !mCanClimb && !mIsJumping)
+			{
+				mIsFalling = true;
 			}
 			if (collision.areCollided(entity, echelle) != NULL)
 			{
 				//TODO State Climbing
 				mCanClimb = true;
 			}
-			else mCanClimb = false;
+			else
+			{
+				mCanClimb = false;
+				mIsClimbingUp = false;
+				mIsClimbingDown = false;
+			}
 			if (collision.areCollided(entity, billBall) != NULL)
 			{
 				//TODO GameOver
@@ -286,23 +310,33 @@ void Game::updateStatistics(sf::Time elapsedTime)
 
 void Game::handlePlayerInput(sf::Keyboard::Key key, bool isPressed)
 {
-	if (key == sf::Keyboard::Up && mIsJumping == false)
+	if (key == sf::Keyboard::Up && mCanClimb)
+	{
+		mIsClimbingUp = true;
+		mIsJumping = false;
+	}
+	else if (key == sf::Keyboard::Up && !mIsJumping && !mIsFalling)
 	{
 		mIsJumping = true;
 		mJumpState = 400.f;
 	}
 
-	else if (key == sf::Keyboard::Up && mCanClimb)
-		mIsClimbingUp = true;
-		
-	else if (key == sf::Keyboard::Down)
-		mIsCrouching = isPressed;
 	else if (key == sf::Keyboard::Down && mCanClimb)
+	{
 		mIsClimbingDown = true;
+		mIsJumping = false;
+	}
+	else if (key == sf::Keyboard::Down)
+		mIsCrouching = isPressed;	
 	else if (key == sf::Keyboard::Left)
 		mIsMovingLeft = isPressed;
 	else if (key == sf::Keyboard::Right)
 		mIsMovingRight = isPressed;
+	else
+	{
+		mIsClimbingDown = false;
+		mIsClimbingUp = false;
+	}
 
 	if (key == sf::Keyboard::Space)
 	{

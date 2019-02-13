@@ -33,7 +33,6 @@ bool Collision::collideBlock(std::shared_ptr<Entity> player, std::shared_ptr<Ent
 {
 	if (player->m_position.y <= block->m_position.y - block->m_size.y)
 	{
-		//player->m_position.y = block->m_position.y - block->m_size.y - 50.0;
 		return false;
 	}
 	else return true;
